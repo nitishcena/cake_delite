@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
-import { ChevronRight, Phone } from 'lucide-react';
+import { Phone } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /* ─── Preloader ─── */
