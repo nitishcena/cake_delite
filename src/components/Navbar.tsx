@@ -6,14 +6,15 @@ const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const navLinks = [
-    { name: 'Home', dot: true },
-    { name: 'Features', dot: false },
-    { name: 'About', dot: false },
-    { name: 'Pages', hasDropdown: true },
+    { name: 'Home', href: '#' },
+    { name: 'Services', href: '#services' },
+    { name: 'Our Cakes', href: '#gallery' },
+    { name: 'Testimonials', href: '#testimonials' },
+    { name: 'Contact', href: '#footer' },
   ];
 
   return (
-    <div className="flex justify-center pt-4 sm:pt-6 px-3 sm:px-4 relative z-50">
+    <div className="flex justify-center pt-4 sm:pt-6 px-3 sm:px-4 relative z-50 w-full">
       <nav className="bg-white rounded-full shadow-sm border border-neutral-200 pl-4 pr-2 py-2 w-full max-w-[900px] relative flex items-center justify-between">
         {/* Logo */}
         <div className="flex-shrink-0 flex items-center gap-2">
@@ -23,14 +24,12 @@ const Navbar: React.FC = () => {
 
         {/* Desktop Links */}
         <div className="hidden md:flex gap-5 lg:gap-7 items-center text-[14px] lg:text-[15px] font-medium text-neutral-600 mx-auto">
-          <a href="#" className="hover:text-[#ef4d23] transition-colors flex items-center gap-1 font-bold text-neutral-900 whitespace-nowrap">
-            <span className="w-1.5 h-1.5 bg-[#ef4d23] rounded-full" />
-            Home
-          </a>
-          <a href="#services" className="hover:text-[#ef4d23] transition-colors whitespace-nowrap">Services</a>
-          <a href="#gallery" className="hover:text-[#ef4d23] transition-colors whitespace-nowrap">Our Cakes</a>
-          <a href="#testimonials" className="hover:text-[#ef4d23] transition-colors whitespace-nowrap">Testimonials</a>
-          <a href="#footer" className="hover:text-[#ef4d23] transition-colors whitespace-nowrap">Contact</a>
+          {navLinks.map((link) => (
+            <a key={link.name} href={link.href} className="hover:text-[#ef4d23] transition-colors flex items-center gap-1 font-bold text-neutral-900 whitespace-nowrap">
+              {link.name === 'Home' && <span className="w-1.5 h-1.5 bg-[#ef4d23] rounded-full" />}
+              {link.name}
+            </a>
+          ))}
         </div>
 
         {/* Right Cluster */}
@@ -44,7 +43,7 @@ const Navbar: React.FC = () => {
             Order Now
           </a>
           {/* Mobile Menu Button */}
-          <button onClick={() => setIsOpen(!isOpen)} className="md:hidden p-2 text-neutral-600 hover:text-[#ef4d23] transition-colors">
+          <button onClick={() => setIsOpen(!isOpen)} className="md:hidden p-2 text-neutral-600 hover:text-[#ef4d23] transition-colors focus:outline-none">
             {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
@@ -56,19 +55,17 @@ const Navbar: React.FC = () => {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="absolute top-full left-0 right-0 mt-3 bg-white rounded-2xl shadow-lg border border-neutral-200 p-4 z-50 flex flex-col gap-4 md:hidden"
+              className="absolute top-full left-0 right-0 mt-3 bg-white rounded-2xl shadow-xl border border-neutral-200 p-5 z-50 flex flex-col gap-4 md:hidden"
             >
               {navLinks.map((link) => (
-                <a key={link.name} href="#" className="text-neutral-700 font-medium text-[15px] flex items-center justify-between">
+                <a key={link.name} href={link.href} onClick={() => setIsOpen(false)} className="text-neutral-700 font-bold text-[16px] flex items-center justify-between hover:text-[#ef4d23] transition-colors">
                   {link.name}
-                  {link.hasDropdown && <ChevronDown className="w-4 h-4" />}
                 </a>
               ))}
-              <hr className="border-neutral-100" />
-              <button className="flex items-center gap-2 text-neutral-700 font-medium">
-                <ShoppingCart className="w-5 h-5" />
-                Cart
-              </button>
+              <hr className="border-neutral-100 my-1" />
+              <a href="https://wa.me/917204209232" target="_blank" rel="noopener noreferrer" onClick={() => setIsOpen(false)} className="flex items-center justify-center gap-2 bg-[#25D366] text-white rounded-full py-3 font-bold shadow-md">
+                Order Now
+              </a>
             </motion.div>
           )}
         </AnimatePresence>
