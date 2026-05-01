@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ShoppingCart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface NavbarProps {
   isScrolled?: boolean;
+  cartCount?: number;
+  onOpenCart?: () => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ isScrolled = false }) => {
+const Navbar: React.FC<NavbarProps> = ({ isScrolled = false, cartCount = 0, onOpenCart }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const navLinks = [
@@ -41,7 +43,19 @@ const Navbar: React.FC<NavbarProps> = ({ isScrolled = false }) => {
         </div>
 
         {/* Right Cluster */}
-        <div className="flex items-center gap-3 flex-shrink-0">
+        <div className="flex items-center gap-1 sm:gap-3 flex-shrink-0">
+          <button 
+            onClick={onOpenCart}
+            className="relative p-2 text-neutral-600 hover:text-[#ef4d23] transition-colors group"
+          >
+            <ShoppingCart className="w-6 h-6" />
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-[#ef4d23] text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm group-hover:scale-110 transition-transform">
+                {cartCount}
+              </span>
+            )}
+          </button>
+
           <a 
             href="https://wa.me/917204209232" 
             target="_blank" 
@@ -71,9 +85,17 @@ const Navbar: React.FC<NavbarProps> = ({ isScrolled = false }) => {
                 </a>
               ))}
               <hr className="border-neutral-100 my-1" />
-              <a href="https://wa.me/917204209232" target="_blank" rel="noopener noreferrer" onClick={() => setIsOpen(false)} className="flex items-center justify-center gap-2 bg-[#25D366] text-white rounded-full py-3 font-bold shadow-md">
-                Order Now
-              </a>
+              <div className="flex flex-col gap-3">
+                <button 
+                  onClick={() => { onOpenCart?.(); setIsOpen(false); }}
+                  className="flex items-center justify-center gap-2 bg-neutral-900 text-white rounded-full py-3 font-bold shadow-md"
+                >
+                  <ShoppingCart className="w-5 h-5" /> View Cart ({cartCount})
+                </button>
+                <a href="https://wa.me/917204209232" target="_blank" rel="noopener noreferrer" onClick={() => setIsOpen(false)} className="flex items-center justify-center gap-2 bg-[#25D366] text-white rounded-full py-3 font-bold shadow-md">
+                  Order via WhatsApp
+                </a>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -81,5 +103,7 @@ const Navbar: React.FC<NavbarProps> = ({ isScrolled = false }) => {
     </div>
   );
 };
+
+export default Navbar;
 
 export default Navbar;

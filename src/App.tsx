@@ -105,12 +105,12 @@ const CakeDivider = () => (
 );
 
 /* ─── Gallery Card ─── */
-const GalleryCard: React.FC<{ src: string; label: string; i: number; onSelect: (img: { src: string; label: string }) => void }> = ({ src, label, i, onSelect }) => {
+const GalleryCard: React.FC<{ src: string; label: string; desc: string; i: number; onSelect: (img: { src: string; label: string; desc: string }) => void }> = ({ src, label, desc, i, onSelect }) => {
   return (
     <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: i * 0.08, ease: [0.25, 0.46, 0.45, 0.94] }}
       viewport={{ once: true, margin: "-40px" }}
-      onClick={() => onSelect({ src, label })}
+      onClick={() => onSelect({ src, label, desc })}
       className="aspect-square rounded-2xl overflow-hidden cursor-pointer group relative border-2 border-white/80 shadow-md hover:shadow-2xl transition-shadow duration-500">
       <img src={src} alt={label} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
       
@@ -124,7 +124,7 @@ const GalleryCard: React.FC<{ src: string; label: string; i: number; onSelect: (
 
 /* ─── Image Modal ─── */
 const ImageModal: React.FC<{ 
-  image: { src: string; label: string } | null; 
+  image: { src: string; label: string; desc: string } | null; 
   onClose: () => void; 
   onAddToCart: (item: string) => void;
   whatsapp: string;
@@ -132,7 +132,7 @@ const ImageModal: React.FC<{
   if (!image) return null;
 
   const fullImageUrl = window.location.origin + image.src;
-  const whatsappMsg = `Hi! I'd like to order: ${image.label}. Image: ${fullImageUrl}`;
+  const whatsappMsg = `Hi! I'd like to order: ${image.label}. Description: ${image.desc}. Image: ${fullImageUrl}`;
 
   return (
     <motion.div 
@@ -153,17 +153,18 @@ const ImageModal: React.FC<{
           <img src={image.src} alt={image.label} className="w-full h-full object-cover" />
         </div>
 
-        <div className="w-full md:w-2/5 p-8 flex flex-col justify-center bg-[#111]">
+        <div className="w-full md:w-2/5 p-6 sm:p-8 flex flex-col justify-center bg-[#111]">
           <span className="text-[#ef4d23] text-xs font-bold tracking-[0.2em] uppercase mb-3 text-center md:text-left">Handcrafted Perfection</span>
-          <h2 className="text-3xl font-bold text-white mb-6 leading-tight text-center md:text-left">{image.label}</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4 leading-tight text-center md:text-left">{image.label}</h2>
+          <p className="text-white/60 text-sm leading-relaxed mb-6 text-center md:text-left">{image.desc}</p>
           
-          <div className="space-y-4 mb-10 hidden sm:block">
-            <div className="flex items-center gap-3 text-white/70 text-sm">
-              <span className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-xs">✨</span>
+          <div className="space-y-4 mb-8 hidden sm:block">
+            <div className="flex items-center gap-3 text-white/70 text-xs">
+              <span className="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center text-[10px]">✨</span>
               Customizable themes & flavors
             </div>
-            <div className="flex items-center gap-3 text-white/70 text-sm">
-              <span className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-xs">🚚</span>
+            <div className="flex items-center gap-3 text-white/70 text-xs">
+              <span className="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center text-[10px]">🚚</span>
               Freshly baked & delivered
             </div>
           </div>
@@ -318,25 +319,29 @@ function App() {
   };
 
   const gallery = [
-    { src: "/assets/cake6.jpeg", label: "Blue Teddy Bear Cake" },
-    { src: "/assets/cake13.jpeg", label: "Birthday King Crown" },
-    { src: "/assets/cake1.jpeg", label: "Purple Gold Wedding Cake" },
-    { src: "/assets/cake3.jpeg", label: "Chocolate Oreo Drip Cake" },
-    { src: "/assets/cake9.jpeg", label: "Love Anniversary Cake" },
-    { src: "/assets/cake11.jpeg", label: "Mickey & Minnie Cake" },
-    { src: "/assets/cake7.jpeg", label: "25th Anniversary Cake" },
-    { src: "/assets/cake10.jpeg", label: "Chocolate Tower Cake" },
-    { src: "/assets/cake12.jpeg", label: "Ganesh Festival Cake" },
-    { src: "/assets/cake4.jpeg", label: "Cricket Theme Cake" },
-    { src: "/assets/cake5.jpeg", label: "Mother's Day Special" },
-    { src: "/assets/cake8.jpeg", label: "Best Mom Ever Cake" },
+    { src: "/assets/cake6.jpeg", label: "Blue Teddy Bear Cake", desc: "A charming handcrafted cake featuring a cute blue teddy bear theme, perfect for baby showers or first birthdays." },
+    { src: "/assets/cake13.jpeg", label: "Birthday King Crown", desc: "Celebrate like royalty with this majestic golden crown cake, layered with rich chocolate and velvet sponge." },
+    { src: "/assets/cake1.jpeg", label: "Purple Gold Wedding Cake", desc: "An elegant multi-tier masterpiece blending royal purple hues with edible gold leaf for the ultimate wedding celebration." },
+    { src: "/assets/cake3.jpeg", label: "Chocolate Oreo Drip Cake", desc: "Indulgent dark chocolate cake topped with crunchy Oreos and a signature silky chocolate drip." },
+    { src: "/assets/cake9.jpeg", label: "Love Anniversary Cake", desc: "Celebrate your special bond with this heart-shaped cake, crafted with layers of strawberry and cream." },
+    { src: "/assets/cake11.jpeg", label: "Mickey & Minnie Cake", desc: "A nostalgic favorite for the little ones, featuring perfectly sculpted Mickey and Minnie Mouse designs." },
+    { src: "/assets/cake7.jpeg", label: "25th Anniversary Cake", desc: "A silver jubilee special! Elegant white frosting with silver accents to mark 25 years of togetherness." },
+    { src: "/assets/cake10.jpeg", label: "Chocolate Tower Cake", desc: "For the true chocolate lover—multiple layers of ganache, fudge, and premium cocoa sponge." },
+    { src: "/assets/cake12.jpeg", label: "Ganesh Festival Cake", desc: "A sacred celebration cake inspired by traditional motifs, perfect for festive family gatherings." },
+    { src: "/assets/cake4.jpeg", label: "Cricket Theme Cake", desc: "Hit a six with this custom cricket pitch cake, complete with a bat, ball, and green grass frosting." },
+    { src: "/assets/cake5.jpeg", label: "Mother's Day Special", desc: "Soft floral designs and gentle pastel colors to show Mom how much you care." },
+    { src: "/assets/cake8.jpeg", label: "Best Mom Ever Cake", desc: "A premium red velvet cake dedicated to the world's best mom, finished with edible lace." },
   ];
 
   return (
     <>
       <AnimatePresence>{loading && <Preloader onComplete={() => setLoading(false)} />}</AnimatePresence>
       
-      <Navbar isScrolled={isScrolled} />
+      <Navbar 
+        isScrolled={isScrolled} 
+        cartCount={cart.length} 
+        onOpenCart={() => setIsCartOpen(true)} 
+      />
 
       {/* Floating Cart Button (Mobile Optimized) */}
       <motion.button 
@@ -519,7 +524,7 @@ function App() {
             {/* Uniform Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
               {gallery.map((img, i) => (
-                <GalleryCard key={i} src={img.src} label={img.label} i={i} onSelect={setSelectedImage} />
+                <GalleryCard key={i} src={img.src} label={img.label} desc={img.desc} i={i} onSelect={setSelectedImage} />
               ))}
             </div>
 
