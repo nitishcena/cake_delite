@@ -522,17 +522,26 @@ function App() {
               <div className="flex flex-col sm:flex-row items-center gap-4">
                 <button 
                   onClick={() => setIsCartOpen(true)}
-                  className="bg-[#ef4d23]/5 border border-[#ef4d23]/10 rounded-full px-5 py-3 flex items-center gap-3 hover:bg-[#ef4d23]/10 transition-colors"
+                  className="bg-[#ef4d23]/5 border border-[#ef4d23]/10 rounded-2xl px-6 py-4 flex items-center gap-4 hover:bg-[#ef4d23]/10 transition-all group cursor-pointer active:scale-95 shadow-sm"
+                  aria-label="View Shopping Cart"
                 >
-                  <span className="text-xl">🛒</span>
-                  <div>
-                    <p className="text-[10px] font-bold text-[#ef4d23] uppercase tracking-wider leading-none">Your Cart</p>
-                    <p className="text-sm font-bold text-neutral-900 leading-none mt-1">{cart.length} Items</p>
+                  <div className="relative">
+                    <ShoppingCart className="w-7 h-7 text-neutral-800 group-hover:text-[#ef4d23] transition-colors" />
+                    {cart.length > 0 && (
+                      <span className="absolute -top-2 -right-2 bg-[#ef4d23] text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+                        {cart.length}
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-left">
+                    <p className="text-[10px] font-black text-[#ef4d23] uppercase tracking-[0.15em] leading-none mb-1">Your Cart</p>
+                    <p className="text-base font-bold text-neutral-900 leading-none">{cart.length} Items</p>
+                    <p className="text-[10px] text-neutral-400 font-bold mt-1 group-hover:text-[#ef4d23] transition-colors underline underline-offset-2 decoration-[#ef4d23]/30">Click to View Items</p>
                   </div>
                 </button>
                 <a href={ig} target="_blank" rel="noopener noreferrer"
-                  className="bg-[#0b0f1a] text-white rounded-full px-6 py-3 text-sm font-bold hover:bg-[#ef4d23] transition-all duration-300 hover:scale-105 shadow-lg flex-shrink-0">
-                  View All on Instagram →
+                  className="bg-[#0b0f1a] text-white rounded-2xl px-7 py-4 text-sm font-bold hover:bg-[#ef4d23] transition-all duration-300 hover:scale-105 shadow-lg flex-shrink-0">
+                  Follow on Instagram →
                 </a>
               </div>
             </motion.div>
