@@ -126,7 +126,7 @@ const GalleryCard: React.FC<{ src: string; label: string; desc: string; i: numbe
 const ImageModal: React.FC<{ 
   image: { src: string; label: string; desc: string } | null; 
   onClose: () => void; 
-  onAddToCart: (item: string) => void;
+  onAddToCart: (item: CartItem) => void;
   whatsapp: string;
 }> = ({ image, onClose, onAddToCart, whatsapp }) => {
   if (!image) return null;
@@ -171,7 +171,7 @@ const ImageModal: React.FC<{
 
           <div className="flex flex-col gap-3">
             <button 
-              onClick={() => { onAddToCart(image.label); onClose(); }}
+              onClick={() => { onAddToCart({ label: image.label, src: image.src }); onClose(); }}
               className="w-full flex items-center justify-center gap-2 bg-[#ef4d23] text-white rounded-full py-4 font-bold text-sm hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg"
             >
               🛒 Add to Cart
@@ -191,15 +191,20 @@ const ImageModal: React.FC<{
   );
 };
 
+interface CartItem {
+  label: string;
+  src: string;
+}
+
 /* ─── Cart Drawer ─── */
 const CartDrawer: React.FC<{ 
   isOpen: boolean; 
   onClose: () => void; 
-  items: string[]; 
+  items: CartItem[]; 
   onRemove: (index: number) => void;
   whatsapp: string;
 }> = ({ isOpen, onClose, items, onRemove, whatsapp }) => {
-  const whatsappMsg = `Hi! I'd like to order these items from my cart:\n${items.map((item, i) => `${i + 1}. ${item}`).join('\n')}`;
+  const whatsappMsg = `Hi! I'd like to order these items from my cart:\n${items.map((item, i) => `${i + 1}. ${item.label}`).join('\n')}`;
 
   return (
     <AnimatePresence>
@@ -239,12 +244,14 @@ const CartDrawer: React.FC<{
                 items.map((item, idx) => (
                   <motion.div 
                     layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                    key={`${item}-${idx}`}
-                    className="group flex items-center justify-between p-4 bg-neutral-50 rounded-2xl border border-neutral-100 hover:border-[#ef4d23]/30 transition-colors"
+                    key={`${item.label}-${idx}`}
+                    className="group flex items-center justify-between p-3 bg-neutral-50 rounded-2xl border border-neutral-100 hover:border-[#ef4d23]/30 transition-colors"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-xl shadow-sm">🍰</div>
-                      <span className="font-bold text-neutral-800">{item}</span>
+                      <div className="w-16 h-16 bg-white rounded-xl overflow-hidden shadow-sm border border-neutral-200">
+                        <img src={item.src} alt={item.label} className="w-full h-full object-cover" />
+                      </div>
+                      <span className="font-bold text-neutral-800 text-sm sm:text-base">{item.label}</span>
                     </div>
                     <button 
                       onClick={() => onRemove(idx)}
@@ -290,16 +297,15 @@ const CartDrawer: React.FC<{
 function App() {
   const [loading, setLoading] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [cart, setCart] = useState<string[]>([]);
+  const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [showNotification, setShowNotification] = useState<string | null>(null);
-  const [selectedImage, setSelectedImage] = useState<{ src: string; label: string } | null>(null);
+  const [selectedImage, setSelectedImage] = useState<{ src: string; label: string; desc: string } | null>(null);
 
   const wa = "917204209232";
   const ig = "https://www.instagram.com/cake_de_literaichur?igsh=MTkwZTR1dHA4aGtrZw==";
   const maps = "https://maps.app.goo.gl/8sDNMBxQ3TZX74XS9";
 
-  // Load cart from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem('cake_cart');
     if (saved) {
@@ -311,7 +317,6 @@ function App() {
     }
   }, []);
 
-  // Save cart to localStorage on change
   useEffect(() => {
     localStorage.setItem('cake_cart', JSON.stringify(cart));
   }, [cart]);
@@ -324,10 +329,10 @@ function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const addToCart = (item: string) => {
+  const addToCart = (item: CartItem) => {
     setCart(prev => [...prev, item]);
-    setShowNotification(item);
-    setIsCartOpen(true); // Open drawer automatically
+    setShowNotification(item.label);
+    setIsCartOpen(true); 
     setTimeout(() => setShowNotification(null), 3000);
   };
 
