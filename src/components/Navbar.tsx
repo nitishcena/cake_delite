@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const Navbar: React.FC = () => {
+interface NavbarProps {
+  isScrolled?: boolean;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ isScrolled = false }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const navLinks = [
@@ -14,16 +18,20 @@ const Navbar: React.FC = () => {
   ];
 
   return (
-    <div className="flex justify-center pt-4 sm:pt-6 px-3 sm:px-4 relative z-50 w-full">
-      <nav className="bg-white rounded-full shadow-sm border border-neutral-200 pl-4 pr-2 py-2 w-full max-w-[900px] relative flex items-center justify-between">
+    <div className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 flex justify-center w-full px-3 sm:px-4 ${isScrolled ? 'pt-2 sm:pt-3' : 'pt-4 sm:pt-6'}`}>
+      <nav className={`transition-all duration-300 rounded-full pl-4 pr-2 py-2 w-full max-w-[1000px] relative flex items-center justify-between ${
+        isScrolled 
+          ? 'bg-white/80 backdrop-blur-md shadow-lg border border-white/20' 
+          : 'bg-white shadow-sm border border-neutral-200'
+      }`}>
         {/* Logo */}
         <div className="flex-shrink-0 flex items-center gap-2">
           <span className="text-2xl sm:text-3xl">🎂</span>
-          <span className="font-bold text-neutral-900 hidden sm:block text-lg whitespace-nowrap" style={{ letterSpacing: '-0.02em' }}>Cake De Lite</span>
+          <span className={`font-bold hidden sm:block text-lg whitespace-nowrap transition-colors ${isScrolled ? 'text-[#ef4d23]' : 'text-neutral-900'}`} style={{ letterSpacing: '-0.02em' }}>Cake De Lite</span>
         </div>
 
         {/* Desktop Links */}
-        <div className="hidden md:flex gap-5 lg:gap-7 items-center text-[14px] lg:text-[15px] font-medium text-neutral-600 mx-auto">
+        <div className="hidden md:flex gap-5 lg:gap-7 items-center text-[14px] lg:text-[15px] font-medium mx-auto">
           {navLinks.map((link) => (
             <a key={link.name} href={link.href} className="hover:text-[#ef4d23] transition-colors flex items-center gap-1 font-bold text-neutral-900 whitespace-nowrap">
               {link.name === 'Home' && <span className="w-1.5 h-1.5 bg-[#ef4d23] rounded-full" />}
@@ -55,7 +63,7 @@ const Navbar: React.FC = () => {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="absolute top-full left-0 right-0 mt-3 bg-white rounded-2xl shadow-xl border border-neutral-200 p-5 z-50 flex flex-col gap-4 md:hidden"
+              className="absolute top-full left-0 right-0 mt-3 bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl border border-neutral-200 p-5 z-50 flex flex-col gap-4 md:hidden"
             >
               {navLinks.map((link) => (
                 <a key={link.name} href={link.href} onClick={() => setIsOpen(false)} className="text-neutral-700 font-bold text-[16px] flex items-center justify-between hover:text-[#ef4d23] transition-colors">

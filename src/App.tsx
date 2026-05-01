@@ -105,28 +105,68 @@ const CakeDivider = () => (
 );
 
 /* ─── Gallery Card ─── */
-const GalleryCard: React.FC<{ src: string; label: string; i: number; whatsapp: string }> = ({ src, label, i, whatsapp }) => (
-  <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.6, delay: i * 0.08, ease: [0.25, 0.46, 0.45, 0.94] }}
-    viewport={{ once: true, margin: "-40px" }}
-    className="aspect-square rounded-2xl overflow-hidden cursor-pointer group relative border-2 border-white/80 shadow-md hover:shadow-2xl transition-shadow duration-500">
-    <img src={src} alt={label} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
-    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-4 sm:p-5">
-      <span className="text-white font-bold text-sm sm:text-base mb-2 translate-y-3 group-hover:translate-y-0 transition-transform duration-500">{label}</span>
-      <a href={`https://wa.me/${whatsapp}?text=Hi! I'd like to order: ${label}`} target="_blank" rel="noopener noreferrer"
-        className="inline-flex items-center gap-1.5 bg-[#25D366] text-white rounded-full px-3 py-1.5 text-xs font-bold w-fit translate-y-3 group-hover:translate-y-0 transition-transform duration-500 delay-75 hover:scale-105">
-        🛒 Order Now
+const GalleryCard: React.FC<{ src: string; label: string; i: number; whatsapp: string; onAddToCart: (item: string) => void }> = ({ src, label, i, whatsapp, onAddToCart }) => {
+  const fullImageUrl = window.location.origin + src;
+  const whatsappMsg = `Hi! I'd like to order: ${label}. Image: ${fullImageUrl}`;
+  
+  return (
+    <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, delay: i * 0.08, ease: [0.25, 0.46, 0.45, 0.94] }}
+      viewport={{ once: true, margin: "-40px" }}
+      className="aspect-square rounded-2xl overflow-hidden cursor-pointer group relative border-2 border-white/80 shadow-md hover:shadow-2xl transition-shadow duration-500">
+      <img src={src} alt={label} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
+      
+      {/* Click image to order via WhatsApp directly */}
+      <a href={`https://wa.me/${whatsapp}?text=${encodeURIComponent(whatsappMsg)}`} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-10" title="Order via WhatsApp">
+        <span className="sr-only">Order {label} via WhatsApp</span>
       </a>
-    </div>
-  </motion.div>
-);
+
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-4 sm:p-5 z-20">
+        <span className="text-white font-bold text-sm sm:text-base mb-3 translate-y-3 group-hover:translate-y-0 transition-transform duration-500">{label}</span>
+        <div className="flex flex-wrap gap-2 translate-y-3 group-hover:translate-y-0 transition-transform duration-500 delay-75">
+          <a href={`https://wa.me/${whatsapp}?text=${encodeURIComponent(whatsappMsg)}`} target="_blank" rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 bg-[#25D366] text-white rounded-full px-3 py-1.5 text-xs font-bold hover:scale-105 transition-transform">
+            🛒 Order Now
+          </a>
+          <button 
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onAddToCart(label);
+            }}
+            className="inline-flex items-center gap-1.5 bg-white text-neutral-900 rounded-full px-3 py-1.5 text-xs font-bold hover:bg-[#ef4d23] hover:text-white transition-all">
+            ➕ Add to Cart
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
 
 /* ─── App ─── */
 function App() {
   const [loading, setLoading] = useState(true);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [cart, setCart] = useState<string[]>([]);
+  const [showNotification, setShowNotification] = useState<string | null>(null);
+
   const wa = "917204209232";
   const ig = "https://www.instagram.com/cake_de_literaichur?igsh=MTkwZTR1dHA4aGtrZw==";
   const maps = "https://maps.app.goo.gl/8sDNMBxQ3TZX74XS9";
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const addToCart = (item: string) => {
+    setCart(prev => [...prev, item]);
+    setShowNotification(item);
+    setTimeout(() => setShowNotification(null), 3000);
+  };
 
   const gallery = [
     { src: "/assets/cake6.jpeg", label: "Blue Teddy Bear Cake" },
@@ -146,17 +186,36 @@ function App() {
   return (
     <>
       <AnimatePresence>{loading && <Preloader onComplete={() => setLoading(false)} />}</AnimatePresence>
+      
+      <Navbar isScrolled={isScrolled} />
 
-      <div className="min-h-screen w-full bg-[#ededed] p-3 sm:p-4 font-['Inter'] overflow-x-hidden">
+      {/* Cart Notification */}
+      <AnimatePresence>
+        {showNotification && (
+          <motion.div 
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 50 }}
+            className="fixed top-24 right-5 z-[101] bg-white border border-[#ef4d23] rounded-xl p-4 shadow-2xl flex items-center gap-3"
+          >
+            <div className="bg-[#ef4d23]/10 p-2 rounded-lg text-xl">🍰</div>
+            <div>
+              <p className="text-xs font-bold text-neutral-400 uppercase tracking-widest">Added to Cart</p>
+              <p className="text-sm font-bold text-neutral-900">{showNotification}</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="min-h-screen w-full bg-[#ededed] p-3 sm:p-4 font-['Inter'] overflow-x-hidden pt-20">
         {/* ═══ HERO ═══ */}
-        <div className="relative w-full min-h-[100svh] sm:min-h-[calc(100vh-32px)] bg-[#d9d9d9] rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden mb-8">
+        <div className="relative w-full min-h-[calc(100svh-40px)] sm:min-h-[calc(100vh-32px)] bg-[#d9d9d9] rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden mb-8">
           <video autoPlay loop muted playsInline preload="auto" className="absolute inset-0 w-full h-full object-cover pointer-events-none z-0">
             <source src="/assets/hero-video.mp4" type="video/mp4" />
           </video>
           <div className="absolute inset-0 bg-black/40 z-[1]" />
 
-          <div className="relative z-10 flex flex-col min-h-[100svh] sm:min-h-[calc(100vh-32px)]">
-            <Navbar />
+          <div className="relative z-10 flex flex-col min-h-[calc(100svh-40px)] sm:min-h-[calc(100vh-32px)]">
             <main className="flex-1 flex flex-col items-center justify-center px-5 sm:px-8 py-12 text-center">
               {/* Badge */}
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 2.5 }}
@@ -255,23 +314,32 @@ function App() {
                 </h2>
                 <p className="text-neutral-400 max-w-sm text-sm sm:text-base">Every cake tells a story. Explore our handcrafted masterpieces.</p>
               </div>
-              <a href={ig} target="_blank" rel="noopener noreferrer"
-                className="bg-[#0b0f1a] text-white rounded-full px-6 py-3 text-sm font-bold hover:bg-[#ef4d23] transition-all duration-300 hover:scale-105 shadow-lg flex-shrink-0">
-                View All on Instagram →
-              </a>
+              <div className="flex flex-col sm:flex-row items-center gap-4">
+                <div className="bg-[#ef4d23]/5 border border-[#ef4d23]/10 rounded-full px-5 py-3 flex items-center gap-3">
+                  <span className="text-xl">🛒</span>
+                  <div>
+                    <p className="text-[10px] font-bold text-[#ef4d23] uppercase tracking-wider leading-none">Your Cart</p>
+                    <p className="text-sm font-bold text-neutral-900 leading-none mt-1">{cart.length} Items</p>
+                  </div>
+                </div>
+                <a href={ig} target="_blank" rel="noopener noreferrer"
+                  className="bg-[#0b0f1a] text-white rounded-full px-6 py-3 text-sm font-bold hover:bg-[#ef4d23] transition-all duration-300 hover:scale-105 shadow-lg flex-shrink-0">
+                  View All on Instagram →
+                </a>
+              </div>
             </motion.div>
 
             {/* Uniform Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
               {gallery.map((img, i) => (
-                <GalleryCard key={i} src={img.src} label={img.label} i={i} whatsapp={wa} />
+                <GalleryCard key={i} src={img.src} label={img.label} i={i} whatsapp={wa} onAddToCart={addToCart} />
               ))}
             </div>
 
             {/* CTA below gallery */}
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
               className="mt-12 sm:mt-16 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-              <a href={`https://wa.me/${wa}?text=Hi! I'd like to order a custom cake.`} target="_blank" rel="noopener noreferrer"
+              <a href={`https://wa.me/${wa}?text=${encodeURIComponent(`Hi! I'd like to order the items in my cart: ${cart.join(", ") || "Custom cake"}`)}`} target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-[#25D366] text-white rounded-full px-7 py-3.5 font-bold text-sm hover:scale-105 transition-transform shadow-lg">
                 🛒 Order via WhatsApp
               </a>
