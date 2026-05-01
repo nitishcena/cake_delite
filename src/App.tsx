@@ -136,37 +136,28 @@ const ImageModal: React.FC<{
 
   return (
     <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-8 bg-black/95 backdrop-blur-xl"
       onClick={onClose}
     >
-      <button 
-        onClick={onClose}
-        className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors z-[210] p-2"
-      >
+      <button onClick={onClose} className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors z-[210] p-2">
         <X className="w-8 h-8" />
       </button>
 
       <motion.div 
-        initial={{ scale: 0.9, opacity: 0, y: 20 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.9, opacity: 0, y: 20 }}
+        initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }}
         className="relative bg-neutral-900 rounded-3xl overflow-hidden max-w-4xl w-full flex flex-col md:flex-row shadow-[0_0_100px_rgba(239,77,35,0.2)] border border-white/10"
         onClick={e => e.stopPropagation()}
       >
-        {/* Left: Image */}
-        <div className="w-full md:w-3/5 aspect-square md:aspect-auto h-auto md:h-[600px] overflow-hidden">
+        <div className="w-full md:w-3/5 h-[300px] md:h-[600px] overflow-hidden">
           <img src={image.src} alt={image.label} className="w-full h-full object-cover" />
         </div>
 
-        {/* Right: Info */}
         <div className="w-full md:w-2/5 p-8 flex flex-col justify-center bg-[#111]">
-          <span className="text-[#ef4d23] text-xs font-bold tracking-[0.2em] uppercase mb-3">Handcrafted Perfection</span>
-          <h2 className="text-3xl font-bold text-white mb-6 leading-tight">{image.label}</h2>
+          <span className="text-[#ef4d23] text-xs font-bold tracking-[0.2em] uppercase mb-3 text-center md:text-left">Handcrafted Perfection</span>
+          <h2 className="text-3xl font-bold text-white mb-6 leading-tight text-center md:text-left">{image.label}</h2>
           
-          <div className="space-y-4 mb-10">
+          <div className="space-y-4 mb-10 hidden sm:block">
             <div className="flex items-center gap-3 text-white/70 text-sm">
               <span className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-xs">✨</span>
               Customizable themes & flavors
@@ -175,36 +166,122 @@ const ImageModal: React.FC<{
               <span className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-xs">🚚</span>
               Freshly baked & delivered
             </div>
-            <div className="flex items-center gap-3 text-white/70 text-sm">
-              <span className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-xs">❤️</span>
-              Made with premium ingredients
-            </div>
           </div>
 
           <div className="flex flex-col gap-3">
             <button 
-              onClick={() => {
-                onAddToCart(image.label);
-                onClose();
-              }}
+              onClick={() => { onAddToCart(image.label); onClose(); }}
               className="w-full flex items-center justify-center gap-2 bg-[#ef4d23] text-white rounded-full py-4 font-bold text-sm hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg"
             >
               🛒 Add to Cart
             </button>
             <a 
               href={`https://wa.me/${whatsapp}?text=${encodeURIComponent(whatsappMsg)}`} 
-              target="_blank" 
-              rel="noopener noreferrer"
+              target="_blank" rel="noopener noreferrer"
               className="w-full flex items-center justify-center gap-2 bg-[#25D366] text-white rounded-full py-4 font-bold text-sm hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg"
             >
               Order via WhatsApp
             </a>
           </div>
-          
-          <p className="mt-6 text-center text-white/30 text-[10px] font-medium tracking-wider">SECURE PAYMENTS & FAST DELIVERY</p>
+          <p className="mt-6 text-center text-white/30 text-[10px] font-medium tracking-wider uppercase">Secure payments & fast delivery</p>
         </div>
       </motion.div>
     </motion.div>
+  );
+};
+
+/* ─── Cart Drawer ─── */
+const CartDrawer: React.FC<{ 
+  isOpen: boolean; 
+  onClose: () => void; 
+  items: string[]; 
+  onRemove: (index: number) => void;
+  whatsapp: string;
+}> = ({ isOpen, onClose, items, onRemove, whatsapp }) => {
+  const whatsappMsg = `Hi! I'd like to order these items from my cart:\n${items.map((item, i) => `${i + 1}. ${item}`).join('\n')}`;
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[250]" 
+          />
+          <motion.div 
+            initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="fixed top-0 right-0 h-full w-full max-w-md bg-white z-[300] shadow-2xl flex flex-col"
+          >
+            <div className="p-6 border-b border-neutral-100 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-[#ef4d23]/10 rounded-full flex items-center justify-center text-xl">🛒</div>
+                <div>
+                  <h3 className="font-bold text-neutral-900 text-lg">My Cart</h3>
+                  <p className="text-xs text-neutral-400 font-medium tracking-widest uppercase">{items.length} Items Selected</p>
+                </div>
+              </div>
+              <button onClick={onClose} className="p-2 hover:bg-neutral-100 rounded-full transition-colors text-neutral-400 hover:text-neutral-900">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+              {items.length === 0 ? (
+                <div className="h-full flex flex-col items-center justify-center text-center opacity-40">
+                  <span className="text-6xl mb-4">🧁</span>
+                  <p className="font-bold text-lg">Your cart is empty</p>
+                  <p className="text-sm">Add some sweet treats to get started!</p>
+                </div>
+              ) : (
+                items.map((item, idx) => (
+                  <motion.div 
+                    layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                    key={`${item}-${idx}`}
+                    className="group flex items-center justify-between p-4 bg-neutral-50 rounded-2xl border border-neutral-100 hover:border-[#ef4d23]/30 transition-colors"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-xl shadow-sm">🍰</div>
+                      <span className="font-bold text-neutral-800">{item}</span>
+                    </div>
+                    <button 
+                      onClick={() => onRemove(idx)}
+                      className="p-2 text-neutral-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </motion.div>
+                ))
+              )}
+            </div>
+
+            {items.length > 0 && (
+              <div className="p-6 border-t border-neutral-100 bg-white space-y-3">
+                <div className="flex justify-between items-center mb-4 px-2">
+                  <span className="text-neutral-500 font-medium">Total Items</span>
+                  <span className="text-xl font-bold text-neutral-900">{items.length}</span>
+                </div>
+                <a 
+                  href={`https://wa.me/${whatsapp}?text=${encodeURIComponent(whatsappMsg)}`}
+                  target="_blank" rel="noopener noreferrer"
+                  className="w-full bg-[#25D366] text-white rounded-full py-4 font-bold flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg"
+                >
+                  Order via WhatsApp
+                </a>
+                <a 
+                  href="tel:+917204209232"
+                  className="w-full bg-[#0b0f1a] text-white rounded-full py-4 font-bold flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg"
+                >
+                  <Phone className="w-5 h-5" /> Order via Call
+                </a>
+                <p className="text-[10px] text-center text-neutral-400 font-bold tracking-widest uppercase pt-2">Fast Response Guaranteed</p>
+              </div>
+            )}
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
   );
 };
 
@@ -213,6 +290,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
   const [cart, setCart] = useState<string[]>([]);
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const [showNotification, setShowNotification] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<{ src: string; label: string } | null>(null);
 
@@ -231,7 +309,12 @@ function App() {
   const addToCart = (item: string) => {
     setCart(prev => [...prev, item]);
     setShowNotification(item);
+    setIsCartOpen(true); // Open drawer automatically
     setTimeout(() => setShowNotification(null), 3000);
+  };
+
+  const removeFromCart = (index: number) => {
+    setCart(prev => prev.filter((_, i) => i !== index));
   };
 
   const gallery = [
@@ -255,6 +338,20 @@ function App() {
       
       <Navbar isScrolled={isScrolled} />
 
+      {/* Floating Cart Button (Mobile Optimized) */}
+      <motion.button 
+        whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
+        onClick={() => setIsCartOpen(true)}
+        className="fixed bottom-8 right-8 z-[150] bg-[#ef4d23] text-white w-16 h-16 rounded-full shadow-[0_10px_30px_rgba(239,77,35,0.4)] flex items-center justify-center text-2xl border-4 border-white"
+      >
+        <span>🛒</span>
+        {cart.length > 0 && (
+          <span className="absolute -top-1 -right-1 bg-black text-white text-[10px] font-bold w-6 h-6 rounded-full flex items-center justify-center border-2 border-white">
+            {cart.length}
+          </span>
+        )}
+      </motion.button>
+
       {/* Cart Notification */}
       <AnimatePresence>
         {showNotification && (
@@ -262,7 +359,7 @@ function App() {
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 50 }}
-            className="fixed top-24 right-5 z-[101] bg-white border border-[#ef4d23] rounded-xl p-4 shadow-2xl flex items-center gap-3"
+            className="fixed top-24 right-5 z-[200] bg-white border border-[#ef4d23] rounded-xl p-4 shadow-2xl flex items-center gap-3"
           >
             <div className="bg-[#ef4d23]/10 p-2 rounded-lg text-xl">🍰</div>
             <div>
@@ -272,6 +369,15 @@ function App() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Cart Drawer */}
+      <CartDrawer 
+        isOpen={isCartOpen} 
+        onClose={() => setIsCartOpen(false)} 
+        items={cart} 
+        onRemove={removeFromCart} 
+        whatsapp={wa} 
+      />
 
       {/* Image Detail Modal */}
       <AnimatePresence>
@@ -285,7 +391,7 @@ function App() {
         )}
       </AnimatePresence>
 
-      <div className="min-h-screen w-full bg-[#ededed] p-3 sm:p-4 font-['Inter'] overflow-x-hidden pt-20">
+      <div className="min-h-screen w-full bg-[#ededed] p-3 sm:p-4 font-['Inter'] overflow-x-hidden pt-20 pb-24 sm:pb-4">
         {/* ═══ HERO ═══ */}
         <div className="relative w-full min-h-[calc(100svh-40px)] sm:min-h-[calc(100vh-32px)] bg-[#d9d9d9] rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden mb-8">
           <video autoPlay loop muted playsInline preload="auto" className="absolute inset-0 w-full h-full object-cover pointer-events-none z-0">
@@ -393,13 +499,16 @@ function App() {
                 <p className="text-neutral-400 max-w-sm text-sm sm:text-base">Every cake tells a story. Explore our handcrafted masterpieces.</p>
               </div>
               <div className="flex flex-col sm:flex-row items-center gap-4">
-                <div className="bg-[#ef4d23]/5 border border-[#ef4d23]/10 rounded-full px-5 py-3 flex items-center gap-3">
+                <button 
+                  onClick={() => setIsCartOpen(true)}
+                  className="bg-[#ef4d23]/5 border border-[#ef4d23]/10 rounded-full px-5 py-3 flex items-center gap-3 hover:bg-[#ef4d23]/10 transition-colors"
+                >
                   <span className="text-xl">🛒</span>
                   <div>
                     <p className="text-[10px] font-bold text-[#ef4d23] uppercase tracking-wider leading-none">Your Cart</p>
                     <p className="text-sm font-bold text-neutral-900 leading-none mt-1">{cart.length} Items</p>
                   </div>
-                </div>
+                </button>
                 <a href={ig} target="_blank" rel="noopener noreferrer"
                   className="bg-[#0b0f1a] text-white rounded-full px-6 py-3 text-sm font-bold hover:bg-[#ef4d23] transition-all duration-300 hover:scale-105 shadow-lg flex-shrink-0">
                   View All on Instagram →
@@ -408,7 +517,7 @@ function App() {
             </motion.div>
 
             {/* Uniform Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
               {gallery.map((img, i) => (
                 <GalleryCard key={i} src={img.src} label={img.label} i={i} onSelect={setSelectedImage} />
               ))}
@@ -417,10 +526,12 @@ function App() {
             {/* CTA below gallery */}
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
               className="mt-12 sm:mt-16 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-              <a href={`https://wa.me/${wa}?text=${encodeURIComponent(`Hi! I'd like to order the items in my cart: ${cart.join(", ") || "Custom cake"}`)}`} target="_blank" rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-[#25D366] text-white rounded-full px-7 py-3.5 font-bold text-sm hover:scale-105 transition-transform shadow-lg">
-                🛒 Order via WhatsApp
-              </a>
+              <button 
+                onClick={() => setIsCartOpen(true)}
+                className="inline-flex items-center gap-2 bg-[#25D366] text-white rounded-full px-7 py-3.5 font-bold text-sm hover:scale-105 transition-transform shadow-lg"
+              >
+                🛒 Open My Cart
+              </button>
               <a href="tel:+917204209232"
                 className="inline-flex items-center gap-2 bg-[#0b0f1a] text-white rounded-full px-7 py-3.5 font-bold text-sm hover:bg-[#ef4d23] transition-all shadow-lg">
                 <Phone className="w-4 h-4" /> Order via Call
