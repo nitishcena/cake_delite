@@ -353,6 +353,11 @@ function App() {
     { src: "/assets/cake4.jpeg", label: "Cricket Theme Cake", desc: "Hit a six with this custom cricket pitch cake, complete with a bat, ball, and green grass frosting." },
     { src: "/assets/cake5.jpeg", label: "Mother's Day Special", desc: "Soft floral designs and gentle pastel colors to show Mom how much you care." },
     { src: "/assets/cake8.jpeg", label: "Best Mom Ever Cake", desc: "A premium red velvet cake dedicated to the world's best mom, finished with edible lace." },
+    { src: "/assets/cake14.jpeg", label: "Red Rose Birthday Cake", desc: "A stunning white cream cake topped with fresh, vibrant red roses—the perfect romantic birthday surprise." },
+    { src: "/assets/cake15.jpeg", label: "Valentine Special Cake", desc: "Celebrate love with this heart-themed cake featuring a custom calendar design and romantic red accents." },
+    { src: "/assets/cake16.jpeg", label: "Luxury Black & Gold", desc: "An artistic masterpiece with elegant black brushstrokes and shimmering gold details for a sophisticated touch." },
+    { src: "/assets/cake17.jpeg", label: "CoComelon Theme Cake", desc: "A delightful two-tier blue cake featuring CoComelon characters and rainbows, perfect for a child's first birthday." },
+    { src: "/assets/cake18.jpeg", label: "BTS Theme Cake", desc: "The ultimate celebration for a BTS fan! A royal purple two-tier cake decorated with member photos and stars." },
   ];
 
   return (
