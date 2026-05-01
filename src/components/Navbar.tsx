@@ -105,5 +105,3 @@ const Navbar: React.FC<NavbarProps> = ({ isScrolled = false, cartCount = 0, onOp
 };
 
 export default Navbar;
-
-export default Navbar;
