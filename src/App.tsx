@@ -299,6 +299,23 @@ function App() {
   const ig = "https://www.instagram.com/cake_de_literaichur?igsh=MTkwZTR1dHA4aGtrZw==";
   const maps = "https://maps.app.goo.gl/8sDNMBxQ3TZX74XS9";
 
+  // Load cart from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('cake_cart');
+    if (saved) {
+      try {
+        setCart(JSON.parse(saved));
+      } catch (e) {
+        console.error("Failed to parse cart", e);
+      }
+    }
+  }, []);
+
+  // Save cart to localStorage on change
+  useEffect(() => {
+    localStorage.setItem('cake_cart', JSON.stringify(cart));
+  }, [cart]);
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
@@ -361,14 +378,13 @@ function App() {
       <AnimatePresence>
         {showNotification && (
           <motion.div 
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 50 }}
-            className="fixed top-24 right-5 z-[200] bg-white border border-[#ef4d23] rounded-xl p-4 shadow-2xl flex items-center gap-3"
+            initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 50 }}
+            onClick={() => setIsCartOpen(true)}
+            className="fixed top-24 right-5 z-[200] bg-white border border-[#ef4d23] rounded-xl p-4 shadow-2xl flex items-center gap-3 cursor-pointer hover:bg-neutral-50 transition-colors"
           >
             <div className="bg-[#ef4d23]/10 p-2 rounded-lg text-xl">🍰</div>
             <div>
-              <p className="text-xs font-bold text-neutral-400 uppercase tracking-widest">Added to Cart</p>
+              <p className="text-xs font-bold text-neutral-400 uppercase tracking-widest leading-none mb-1">Added to Cart</p>
               <p className="text-sm font-bold text-neutral-900">{showNotification}</p>
             </div>
           </motion.div>
